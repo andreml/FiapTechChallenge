@@ -1,12 +1,8 @@
 ﻿using FiapTechChallenge;
 
-//string[] acentosMinusculas = { "á", "à", "â", "ã", "é", "ê", "í", "ó", "ô", "õ", "ú", "ü" };
-//string[] acentosMaiusculas = { "Á", "À", "Â", "Ã", "É", "Ê", "Í", "Ó", "Ô", "Õ", "Ú", "Ü" };
-
-//string[] minusculas = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
-//string[] maiusculas = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-
-string[] alfabetoCompleto = { "á", "à", "â", "ã", "é", "ê", "í", "ó", "ô", "õ", "ú", "ü", "Á", "À", "Â", "Ã", "É", "Ê", "Í", "Ó", "Ô", "Õ", "Ú", "Ü", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+string alfabetoCompleto = "A,E,I,O,U,Á,É,Í,Ó,Ú,À,È,Ì,Ò,Ù,Â,Ê,Î,Ô,Û,Ã,Õ,Ä,Ë,Ï,Ö,Ü";
+int init = 1;
+int total = 10;
 
 var _ = new CallApi();
 var client = new HttpClient();
@@ -16,22 +12,12 @@ client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json
 var tasks = new List<Task>();
 var options = new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
-//Parallel.For(1, 10001, options, index =>
-//{
-//    Parallel.ForEach(alfabetoCompleto, letra =>
-//    {
-//        string key = string.Concat(letra, index.ToString());
-//        tasks.Add(new Task(() => CallApi.GetKey(key, client, uri)));
-//    });
-//});
+var keys = _.GetRandomKey(init, total, alfabetoCompleto.Split(","));
 
-Parallel.For(1, 11, options, index =>
+Parallel.ForEach(keys, options, async key =>
 {
-    foreach (var letra in alfabetoCompleto)
+    if (await _.GetKey(key, client, uri))
     {
-        string key = string.Concat(letra, index.ToString());
-        tasks.Add(new Task(async () => await _.GetKey(key, client, uri)));
+        Console.WriteLine("Fim");
     };
 });
-
-await Task.WhenAll(tasks);
